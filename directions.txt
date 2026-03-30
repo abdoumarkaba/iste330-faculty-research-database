@@ -1,0 +1,71 @@
+ISTE 330 - Faculty Research Database
+Author: Developer | Date: 2026-03-30
+=====================================
+
+STEP 1 — Set up the database
+------------------------------
+1. Open MySQL Workbench or a terminal with MySQL access.
+2. Run the schema file:
+      mysql -u root -p < sql/schema.sql
+   Or in Workbench: File > Open SQL Script > select sql/schema.sql > Execute.
+3. This creates the database, all tables, and sample data.
+
+STEP 2 — Configure db.properties
+-----------------------------------
+Edit the file db.properties in the project root:
+      host=localhost
+      user=root
+      password=yourpassword
+Replace values to match your MySQL credentials.
+
+STEP 3 — Add MySQL Connector/J
+--------------------------------
+Download mysql-connector-j-X.X.X.jar from:
+   https://dev.mysql.com/downloads/connector/j/
+Place it anywhere accessible (e.g. the project root).
+
+STEP 4 — Compile
+-----------------
+From the project root directory, run:
+
+   Windows:
+   javac -cp .;mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java -d out
+
+   Mac/Linux:
+   javac -cp .:mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java -d out
+
+Also copy db.properties into the out/ folder:
+   cp db.properties out/
+
+STEP 5 — Run
+-------------
+   Windows:
+   java -cp out;mysql-connector-j.jar Main
+
+   Mac/Linux:
+   java -cp out:mysql-connector-j.jar Main
+
+=====================================
+USING THE APPLICATION
+=====================================
+
+LOGIN SCREEN
+- Select your user type: Faculty, Student, or Public.
+- Faculty and Student: enter your numeric ID (sample IDs: faculty 1-3, students 1-3).
+- Public: no ID needed, click Login directly.
+
+FACULTY PANEL (faculty IDs 1, 2, or 3)
+- Your keywords are shown on login.
+- Insert Abstract: type text in the text area, choose type (book/speaking), click Insert.
+- Update Abstract: enter the abstract_id to change, type new text, click Update.
+- Delete Abstract: enter the abstract_id to remove, click Delete, confirm prompt.
+- Search Students: type a keyword, click Search Students — matching students appear in the table.
+
+STUDENT PANEL (student IDs 1, 2, or 3)
+- Search Faculty: type a keyword (e.g. "AI", "Security"), click Search Faculty.
+  Results show faculty name, building/office, and email.
+- View All Faculty: click button to list all faculty without filtering.
+
+PUBLIC PANEL (no login)
+- Enter 1 keyword (e.g. "HCI"), click Search — shows matching students and faculty.
+- View All Entries: shows every student and faculty member in the database.
