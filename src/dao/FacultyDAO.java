@@ -1,0 +1,102 @@
+// Author: Developer | Date: 2026-03-30 | ISTE 330
+
+package dao;
+
+import model.Faculty;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class FacultyDAO {
+
+    public boolean insertAbstract(int facultyId, String abstractType, String abstractText) {
+        String sql = "INSERT INTO faculty_abstracts (faculty_id, abstract_type, abstract_text) VALUES (?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            pstmt.setString(2, abstractType);
+            pstmt.setString(3, abstractText);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateAbstract(int abstractId, String abstractText) {
+        String sql = "UPDATE faculty_abstracts SET abstract_text = ? WHERE abstract_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, abstractText);
+            pstmt.setInt(2, abstractId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteAbstract(int abstractId) {
+        String sql = "DELETE FROM faculty_abstracts WHERE abstract_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, abstractId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<String> getFacultyKeywords(int facultyId) {
+        List<String> keywords = new ArrayList<>();
+        String sql = "SELECT keyword FROM faculty_keywords WHERE faculty_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) keywords.add(rs.getString("keyword"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return keywords;
+    }
+
+    public List<String> searchStudentsByKeyword(String keyword) {
+        List<String> results = new ArrayList<>();
+        String sql = "SELECT DISTINCT s.first_name, s.last_name, s.email " +
+                     "FROM students s JOIN student_keywords sk ON s.student_id = sk.student_id " +
+                     "WHERE sk.keyword LIKE ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + keyword + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                results.add(rs.getString("first_name") + " " + rs.getString("last_name") +
+                            " - " + rs.getString("email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    public Faculty getFacultyById(int facultyId) {
+        String sql = "SELECT * FROM faculty WHERE faculty_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new Faculty(facultyId,
+                    rs.getString("first_name"), rs.getString("last_name"),
+                    rs.getString("building"), rs.getString("office_number"),
+                    rs.getString("email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
