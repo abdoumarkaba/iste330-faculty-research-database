@@ -11,7 +11,8 @@ CREATE TABLE faculty (
     last_name VARCHAR(50) NOT NULL,
     building VARCHAR(50),
     office_number VARCHAR(20),
-    email VARCHAR(100) UNIQUE NOT NULL
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NULL COMMENT 'PBKDF2 hashed password - NULL means account not activated'
 );
 
 CREATE TABLE faculty_abstracts (
@@ -33,7 +34,8 @@ CREATE TABLE students (
     student_id INT PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NULL COMMENT 'PBKDF2 hashed password - NULL means account not activated'
 );
 
 CREATE TABLE student_keywords (

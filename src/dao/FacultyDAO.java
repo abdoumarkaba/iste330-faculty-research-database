@@ -6,13 +6,27 @@ package dao;
 import model.Faculty;
 import model.Student;
 import exception.DatabaseException;
+import util.ValidationUtil;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Data Access Object for Faculty operations.
+ * All public methods validate input parameters to prevent SQL injection and ensure data integrity.
+ */
 public class FacultyDAO {
 
+    /**
+     * Inserts a new abstract for a faculty member.
+     * Validates all inputs to prevent SQL injection and ensure data integrity.
+     */
     public boolean insertAbstract(int facultyId, String abstractType, String abstractText) {
+        // Security: Validate all inputs
+        ValidationUtil.validateFacultyId(facultyId);
+        ValidationUtil.validateAbstractType(abstractType);
+        ValidationUtil.validateAbstractText(abstractText);
+        
         String sql = "INSERT INTO faculty_abstracts (faculty_id, abstract_type, abstract_text) VALUES (?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -27,7 +41,15 @@ public class FacultyDAO {
         }
     }
 
+    /**
+     * Updates an existing abstract.
+     * Validates inputs to prevent SQL injection.
+     */
     public boolean updateAbstract(int abstractId, String abstractText) {
+        // Security: Validate inputs
+        ValidationUtil.validateAbstractId(abstractId);
+        ValidationUtil.validateAbstractText(abstractText);
+        
         String sql = "UPDATE faculty_abstracts SET abstract_text = ? WHERE abstract_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -40,7 +62,14 @@ public class FacultyDAO {
         }
     }
 
+    /**
+     * Deletes an abstract by ID.
+     * Validates the abstract ID to prevent invalid operations.
+     */
     public boolean deleteAbstract(int abstractId) {
+        // Security: Validate input
+        ValidationUtil.validateAbstractId(abstractId);
+        
         String sql = "DELETE FROM faculty_abstracts WHERE abstract_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -52,7 +81,14 @@ public class FacultyDAO {
         }
     }
 
+    /**
+     * Gets all keywords for a faculty member.
+     * Validates the faculty ID before querying.
+     */
     public List<String> getFacultyKeywords(int facultyId) {
+        // Security: Validate input
+        ValidationUtil.validateFacultyId(facultyId);
+        
         List<String> keywords = new ArrayList<>();
         String sql = "SELECT keyword FROM faculty_keywords WHERE faculty_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -69,8 +105,12 @@ public class FacultyDAO {
 
     /**
      * Searches students by keyword, returning Student model objects.
+     * Validates the search keyword to prevent SQL injection.
      */
     public List<Student> searchStudentsByKeywordModels(String keyword) {
+        // Security: Validate search keyword
+        ValidationUtil.validateSearchKeyword(keyword);
+        
         List<Student> results = new ArrayList<>();
         String sql = "SELECT DISTINCT s.student_id, s.first_name, s.last_name, s.email " +
                      "FROM students s JOIN student_keywords sk ON s.student_id = sk.student_id " +
@@ -94,7 +134,14 @@ public class FacultyDAO {
         return results;
     }
 
+    /**
+     * Searches students by keyword, returning formatted strings.
+     * Validates the search keyword to prevent SQL injection.
+     */
     public List<String> searchStudentsByKeyword(String keyword) {
+        // Security: Validate search keyword
+        ValidationUtil.validateSearchKeyword(keyword);
+        
         List<String> results = new ArrayList<>();
         String sql = "SELECT DISTINCT s.first_name, s.last_name, s.email " +
                      "FROM students s JOIN student_keywords sk ON s.student_id = sk.student_id " +
@@ -114,7 +161,14 @@ public class FacultyDAO {
         return results;
     }
 
+    /**
+     * Gets a faculty member by ID.
+     * Validates the faculty ID before querying.
+     */
     public Faculty getFacultyById(int facultyId) {
+        // Security: Validate input
+        ValidationUtil.validateFacultyId(facultyId);
+        
         String sql = "SELECT faculty_id, first_name, last_name, building, office_number, email FROM faculty WHERE faculty_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -136,8 +190,12 @@ public class FacultyDAO {
     /**
      * Searches for students whose keywords match the faculty's keywords or abstracts.
      * Returns Student model objects.
+     * Validates the faculty ID before querying.
      */
     public List<Student> searchStudentsByFacultyMatchModels(int facultyId) {
+        // Security: Validate input
+        ValidationUtil.validateFacultyId(facultyId);
+        
         List<Student> results = new ArrayList<>();
         String sql = "SELECT DISTINCT s.student_id, s.first_name, s.last_name, s.email " +
                      "FROM students s " +
@@ -172,8 +230,12 @@ public class FacultyDAO {
      * Searches for students whose keywords match the faculty's keywords or abstracts.
      * Per requirement: "compare faculty interest keywords with student keywords and/or
      * compare the faculty's abstracts stored in the database to the student's keywords of interest"
+     * Validates the faculty ID before querying.
      */
     public List<String> searchStudentsByFacultyMatch(int facultyId) {
+        // Security: Validate input
+        ValidationUtil.validateFacultyId(facultyId);
+        
         List<String> results = new ArrayList<>();
         // Find students whose keywords match faculty's keywords OR appear in faculty's abstracts
         String sql = "SELECT DISTINCT s.student_id, s.first_name, s.last_name, s.email " +
@@ -203,8 +265,12 @@ public class FacultyDAO {
 
     /**
      * Gets all abstracts for a faculty member.
+     * Validates the faculty ID before querying.
      */
     public List<String> getFacultyAbstracts(int facultyId) {
+        // Security: Validate input
+        ValidationUtil.validateFacultyId(facultyId);
+        
         List<String> abstracts = new ArrayList<>();
         String sql = "SELECT abstract_id, abstract_type, abstract_text FROM faculty_abstracts WHERE faculty_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -221,5 +287,109 @@ public class FacultyDAO {
                 "Failed to get abstracts for faculty ID " + facultyId, e);
         }
         return abstracts;
+    }
+    
+    // ==================== PASSWORD AUTHENTICATION METHODS ====================
+    
+    /**
+     * Gets the stored password hash for a faculty member.
+     * Returns NULL if faculty doesn't exist or has no password set.
+     * 
+     * @param facultyId the faculty ID
+     * @return password hash string, or null if not found/no password
+     */
+    public String getPasswordHash(int facultyId) {
+        ValidationUtil.validateFacultyId(facultyId);
+        
+        String sql = "SELECT password_hash FROM faculty WHERE faculty_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("password_hash");
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("getPasswordHash",
+                "Failed to get password hash for faculty ID " + facultyId, e);
+        }
+        return null;
+    }
+    
+    /**
+     * Sets or updates the password hash for a faculty member.
+     * 
+     * @param facultyId the faculty ID
+     * @param passwordHash the hashed password string
+     * @return true if successful
+     */
+    public boolean setPasswordHash(int facultyId, String passwordHash) {
+        ValidationUtil.validateFacultyId(facultyId);
+        
+        if (passwordHash == null || passwordHash.isEmpty()) {
+            throw new IllegalArgumentException("Password hash cannot be empty");
+        }
+        
+        String sql = "UPDATE faculty SET password_hash = ? WHERE faculty_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, passwordHash);
+            pstmt.setInt(2, facultyId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DatabaseException("setPasswordHash",
+                "Failed to set password hash for faculty ID " + facultyId, e);
+        }
+    }
+    
+    /**
+     * Authenticates a faculty member with ID and password.
+     * 
+     * @param facultyId the faculty ID
+     * @param password the plain text password
+     * @return true if authentication successful
+     */
+    public boolean authenticateFaculty(int facultyId, String password) {
+        // Validate inputs
+        ValidationUtil.validateFacultyId(facultyId);
+        if (password == null || password.isEmpty()) {
+            return false;
+        }
+        
+        // Get stored password hash
+        String storedHash = getPasswordHash(facultyId);
+        
+        // If no password set, authentication fails
+        if (storedHash == null || storedHash.isEmpty()) {
+            return false;
+        }
+        
+        // Verify password
+        return util.PasswordUtil.verifyPassword(password, storedHash);
+    }
+    
+    /**
+     * Checks if a faculty account is activated (has a password set).
+     * 
+     * @param facultyId the faculty ID
+     * @return true if account is activated
+     */
+    public boolean isAccountActivated(int facultyId) {
+        ValidationUtil.validateFacultyId(facultyId);
+        
+        String sql = "SELECT password_hash FROM faculty WHERE faculty_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                String hash = rs.getString("password_hash");
+                return hash != null && !hash.isEmpty();
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("isAccountActivated",
+                "Failed to check account status for faculty ID " + facultyId, e);
+        }
+        return false;
     }
 }
