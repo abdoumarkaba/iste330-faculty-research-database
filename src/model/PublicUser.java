@@ -1,4 +1,5 @@
-// Author: Developer | Date: 2026-03-30 | ISTE 330
+// Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
+// Date: 2026-04-13 | ISTE 330
 
 package model;
 

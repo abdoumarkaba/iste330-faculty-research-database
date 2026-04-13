@@ -1,5 +1,6 @@
 ISTE 330 - Faculty Research Database
-Author: Developer | Date: 2026-03-30
+Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
+Date: 2026-04-13
 =====================================
 
 STEP 1 — Set up the database
@@ -29,10 +30,10 @@ STEP 4 — Compile
 From the project root directory, run:
 
    Windows:
-   javac -cp .;mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java -d out
+   javac -cp .;mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java src/test/*.java -d out
 
    Mac/Linux:
-   javac -cp .:mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java -d out
+   javac -cp .:mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java src/test/*.java -d out
 
 Also copy db.properties into the out/ folder:
    cp db.properties out/
@@ -44,6 +45,12 @@ STEP 5 — Run
 
    Mac/Linux:
    java -cp out:mysql-connector-j.jar Main
+
+=====================================
+MAIN METHOD LOCATION
+=====================================
+The main method is located in: src/Main.java
+This launches the GUI application.
 
 =====================================
 USING THE APPLICATION
@@ -69,3 +76,23 @@ STUDENT PANEL (student IDs 1, 2, or 3)
 PUBLIC PANEL (no login)
 - Enter 1 keyword (e.g. "HCI"), click Search — shows matching students and faculty.
 - View All Entries: shows every student and faculty member in the database.
+
+=====================================
+RUNNING TESTS
+=====================================
+To verify the backend is working correctly, run the test classes:
+
+   Windows:
+   java -cp out;mysql-connector-j.jar test.DBConnectionTest
+   java -cp out;mysql-connector-j.jar test.FacultyDAOTest
+   java -cp out;mysql-connector-j.jar test.StudentDAOTest
+   java -cp out;mysql-connector-j.jar test.PublicUserDAOTest
+
+   Mac/Linux:
+   java -cp out:mysql-connector-j.jar test.DBConnectionTest
+   java -cp out:mysql-connector-j.jar test.FacultyDAOTest
+   java -cp out:mysql-connector-j.jar test.StudentDAOTest
+   java -cp out:mysql-connector-j.jar test.PublicUserDAOTest
+
+Each test class will print PASSED/FAILED for each test case.
+All tests should pass if the database is correctly set up.

@@ -1,4 +1,5 @@
-// Author: Developer | Date: 2026-03-30 | ISTE 330
+// Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
+// Date: 2026-04-13 | ISTE 330
 
 package dao;
 
@@ -98,5 +99,58 @@ public class FacultyDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * Searches for students whose keywords match the faculty's keywords or abstracts.
+     * Per requirement: "compare faculty interest keywords with student keywords and/or
+     * compare the faculty's abstracts stored in the database to the student's keywords of interest"
+     */
+    public List<String> searchStudentsByFacultyMatch(int facultyId) {
+        List<String> results = new ArrayList<>();
+        // Find students whose keywords match faculty's keywords OR appear in faculty's abstracts
+        String sql = "SELECT DISTINCT s.student_id, s.first_name, s.last_name, s.email " +
+                     "FROM students s " +
+                     "JOIN student_keywords sk ON s.student_id = sk.student_id " +
+                     "WHERE sk.keyword IN (" +
+                     "    SELECT keyword FROM faculty_keywords WHERE faculty_id = ?" +
+                     ") OR EXISTS (" +
+                     "    SELECT 1 FROM faculty_abstracts fa " +
+                     "    WHERE fa.faculty_id = ? AND fa.abstract_text LIKE CONCAT('%', sk.keyword, '%')" +
+                     ")";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            pstmt.setInt(2, facultyId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                results.add(rs.getString("first_name") + " " + rs.getString("last_name") +
+                            " - " + rs.getString("email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return results;
+    }
+
+    /**
+     * Gets all abstracts for a faculty member.
+     */
+    public List<String> getFacultyAbstracts(int facultyId) {
+        List<String> abstracts = new ArrayList<>();
+        String sql = "SELECT abstract_id, abstract_type, abstract_text FROM faculty_abstracts WHERE faculty_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                abstracts.add("[" + rs.getInt("abstract_id") + "] " +
+                            rs.getString("abstract_type") + ": " +
+                            rs.getString("abstract_text"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return abstracts;
     }
 }

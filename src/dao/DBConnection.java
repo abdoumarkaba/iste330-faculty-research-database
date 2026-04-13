@@ -1,4 +1,5 @@
-// Author: Developer | Date: 2026-03-30 | ISTE 330
+// Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
+// Date: 2026-04-13 | ISTE 330
 
 package dao;
 
@@ -16,13 +17,16 @@ public class DBConnection {
 
     static {
         try (InputStream input = DBConnection.class.getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                throw new RuntimeException("db.properties not found in classpath");
+            }
             Properties prop = new Properties();
             prop.load(input);
             host = prop.getProperty("host");
             user = prop.getProperty("user");
             password = prop.getProperty("password");
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Failed to load db.properties", e);
         }
     }
 

@@ -1,4 +1,5 @@
-// Author: Developer | Date: 2026-03-30 | ISTE 330
+// Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
+// Date: 2026-04-13 | ISTE 330
 
 package dao;
 
@@ -59,5 +60,39 @@ public class StudentDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public List<String> getStudentKeywords(int studentId) {
+        List<String> keywords = new ArrayList<>();
+        String sql = "SELECT keyword FROM student_keywords WHERE student_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, studentId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                keywords.add(rs.getString("keyword"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return keywords;
+    }
+
+    public model.Student getStudentById(int studentId) {
+        String sql = "SELECT * FROM students WHERE student_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, studentId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return new model.Student(studentId,
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("email"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
