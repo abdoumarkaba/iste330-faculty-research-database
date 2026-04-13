@@ -2,6 +2,31 @@
 
 A Java Swing desktop application for managing faculty research abstracts and student-faculty matching based on research keywords.
 
+## Quick Start (Docker)
+
+The fastest way to get started - no MySQL installation required.
+
+**Prerequisites:** Docker + Java JDK 8+
+
+```bash
+# Start the database
+docker compose up -d
+
+# Run the application (Linux/macOS)
+./scripts/run.sh
+
+# Run the application (Windows)
+scripts\run.bat
+
+# Run all backend tests (Linux/macOS)
+./scripts/test.sh
+
+# Run all backend tests (Windows)
+scripts\test.bat
+```
+
+Default credentials (in `db.properties`): `host=localhost:3307`, `user=root`, `password=student`
+
 ## Architecture
 
 This application follows a **3-tier layered architecture**:
@@ -46,9 +71,17 @@ faculty-research-db/
 │       └── PublicUserDAOTest.java
 ├── sql/
 │   └── schema.sql             # Database creation script
+├── docker/
+│   └── init.sql               # Docker database initialization
+├── scripts/
+│   ├── run.sh                 # Compile + run (Linux/macOS)
+│   ├── run.bat                # Compile + run (Windows)
+│   ├── test.sh                # Run tests (Linux/macOS)
+│   └── test.bat               # Run tests (Windows)
+├── docker-compose.yml         # Docker MySQL setup
 ├── db.properties              # MySQL credentials
 ├── directions.txt             # End-user setup guide
-└── mysql-connector-java.jar   # JDBC driver
+└── mysql-connector-java-8.0.21.jar   # JDBC driver
 ```
 
 ## Database Schema
@@ -63,12 +96,14 @@ The MySQL database `faculty_research_db` contains:
 | `student_keywords` | Research interest tags for students |
 | `faculty_abstracts` | Published research abstracts |
 
-## Building and Running
+## Building and Running (Manual Setup)
+
+Use this method if you have a local MySQL installation and prefer not to use Docker.
 
 ### Prerequisites
 - Java JDK 8+
-- MySQL Server
-- MySQL Connector/J (provided)
+- MySQL Server 8.0
+- MySQL Connector/J (provided: `mysql-connector-java-8.0.21.jar`)
 
 ### Setup
 
@@ -87,21 +122,21 @@ The MySQL database `faculty_research_db` contains:
 
 3. **Compile:**
    ```bash
-   javac -cp .:mysql-connector-java.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java src/test/*.java -d out
+   javac -cp .:mysql-connector-java-8.0.21.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java src/test/*.java -d out
    cp db.properties out/
    ```
 
 4. **Run:**
    ```bash
-   java -cp out:mysql-connector-java.jar Main
+   java -cp out:mysql-connector-java-8.0.21.jar Main
    ```
 
 5. **Test backend:**
    ```bash
-   java -cp out:mysql-connector-java.jar test.DBConnectionTest
-   java -cp out:mysql-connector-java.jar test.FacultyDAOTest
-   java -cp out:mysql-connector-java.jar test.StudentDAOTest
-   java -cp out:mysql-connector-java.jar test.PublicUserDAOTest
+   java -cp out:mysql-connector-java-8.0.21.jar test.DBConnectionTest
+   java -cp out:mysql-connector-java-8.0.21.jar test.FacultyDAOTest
+   java -cp out:mysql-connector-java-8.0.21.jar test.StudentDAOTest
+   java -cp out:mysql-connector-java-8.0.21.jar test.PublicUserDAOTest
    ```
 
 ## Key Design Patterns

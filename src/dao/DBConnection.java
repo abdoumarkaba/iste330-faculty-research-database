@@ -31,7 +31,9 @@ public class DBConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        String url = "jdbc:mysql://" + host + ":3306/faculty_research_db?useSSL=false&serverTimezone=UTC";
+        // If host already contains a port (e.g., "localhost:3307"), use it; otherwise default to 3306
+        String hostWithPort = host.contains(":") ? host : host + ":3306";
+        String url = "jdbc:mysql://" + hostWithPort + "/faculty_research_db?useSSL=false&serverTimezone=UTC";
         return DriverManager.getConnection(url, user, password);
     }
 }

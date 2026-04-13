@@ -3,6 +3,7 @@
 
 package dao;
 
+import exception.DatabaseException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,8 @@ public class PublicUserDAO {
                             " | " + rs.getString("email"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("searchByKeyword",
+                "Failed to search by keyword: " + keyword, e);
         }
         return results;
     }
@@ -48,7 +50,8 @@ public class PublicUserDAO {
                             " | " + rs.getString("email"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("getAllEntries",
+                "Failed to get all entries", e);
         }
         return results;
     }

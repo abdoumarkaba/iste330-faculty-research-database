@@ -4,6 +4,8 @@
 package dao;
 
 import model.Faculty;
+import model.Student;
+import exception.DatabaseException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +22,8 @@ public class FacultyDAO {
             pstmt.executeUpdate();
             return true;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DatabaseException("insertAbstract", 
+                "Failed to insert abstract for faculty ID " + facultyId, e);
         }
     }
 
@@ -33,8 +35,8 @@ public class FacultyDAO {
             pstmt.setInt(2, abstractId);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DatabaseException("updateAbstract",
+                "Failed to update abstract ID " + abstractId, e);
         }
     }
 
@@ -45,8 +47,8 @@ public class FacultyDAO {
             pstmt.setInt(1, abstractId);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new DatabaseException("deleteAbstract",
+                "Failed to delete abstract ID " + abstractId, e);
         }
     }
 
@@ -59,9 +61,37 @@ public class FacultyDAO {
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) keywords.add(rs.getString("keyword"));
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("getFacultyKeywords",
+                "Failed to get keywords for faculty ID " + facultyId, e);
         }
         return keywords;
+    }
+
+    /**
+     * Searches students by keyword, returning Student model objects.
+     */
+    public List<Student> searchStudentsByKeywordModels(String keyword) {
+        List<Student> results = new ArrayList<>();
+        String sql = "SELECT DISTINCT s.student_id, s.first_name, s.last_name, s.email " +
+                     "FROM students s JOIN student_keywords sk ON s.student_id = sk.student_id " +
+                     "WHERE sk.keyword LIKE ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, "%" + keyword + "%");
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                results.add(new Student(
+                    rs.getInt("student_id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("email")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("searchStudentsByKeywordModels",
+                "Failed to search students by keyword: " + keyword, e);
+        }
+        return results;
     }
 
     public List<String> searchStudentsByKeyword(String keyword) {
@@ -78,13 +108,14 @@ public class FacultyDAO {
                             " - " + rs.getString("email"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("searchStudentsByKeyword",
+                "Failed to search students by keyword: " + keyword, e);
         }
         return results;
     }
 
     public Faculty getFacultyById(int facultyId) {
-        String sql = "SELECT * FROM faculty WHERE faculty_id = ?";
+        String sql = "SELECT faculty_id, first_name, last_name, building, office_number, email FROM faculty WHERE faculty_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, facultyId);
@@ -96,9 +127,45 @@ public class FacultyDAO {
                     rs.getString("email"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("getFacultyById",
+                "Failed to get faculty by ID " + facultyId, e);
         }
         return null;
+    }
+
+    /**
+     * Searches for students whose keywords match the faculty's keywords or abstracts.
+     * Returns Student model objects.
+     */
+    public List<Student> searchStudentsByFacultyMatchModels(int facultyId) {
+        List<Student> results = new ArrayList<>();
+        String sql = "SELECT DISTINCT s.student_id, s.first_name, s.last_name, s.email " +
+                     "FROM students s " +
+                     "JOIN student_keywords sk ON s.student_id = sk.student_id " +
+                     "WHERE sk.keyword IN (" +
+                     "    SELECT keyword FROM faculty_keywords WHERE faculty_id = ?" +
+                     ") OR EXISTS (" +
+                     "    SELECT 1 FROM faculty_abstracts fa " +
+                     "    WHERE fa.faculty_id = ? AND fa.abstract_text LIKE CONCAT('%', sk.keyword, '%')" +
+                     ")";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            pstmt.setInt(2, facultyId);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                results.add(new Student(
+                    rs.getInt("student_id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("email")
+                ));
+            }
+        } catch (SQLException e) {
+            throw new DatabaseException("searchStudentsByFacultyMatchModels",
+                "Failed to match students for faculty ID " + facultyId, e);
+        }
+        return results;
     }
 
     /**
@@ -128,7 +195,8 @@ public class FacultyDAO {
                             " - " + rs.getString("email"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("searchStudentsByFacultyMatch",
+                "Failed to match students for faculty ID " + facultyId, e);
         }
         return results;
     }
@@ -149,7 +217,8 @@ public class FacultyDAO {
                             rs.getString("abstract_text"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new DatabaseException("getFacultyAbstracts",
+                "Failed to get abstracts for faculty ID " + facultyId, e);
         }
         return abstracts;
     }

@@ -3,6 +3,29 @@ Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
 Date: 2026-04-13
 =====================================
 
+QUICK START (Docker - Recommended)
+=====================================
+No MySQL installation required.
+
+Prerequisites: Docker + Java JDK 8+
+
+1. Start the database:
+      docker compose up -d
+
+2. Run the application:
+      Linux/Mac:  ./scripts/run.sh
+      Windows:    scripts\run.bat
+
+3. Run backend tests:
+      Linux/Mac:  ./scripts/test.sh
+      Windows:    scripts\test.bat
+
+Default credentials: host=localhost:3307, user=root, password=student
+
+=====================================
+MANUAL SETUP (Local MySQL)
+=====================================
+
 STEP 1 — Set up the database
 ------------------------------
 1. Open MySQL Workbench or a terminal with MySQL access.
