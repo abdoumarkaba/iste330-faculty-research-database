@@ -32,6 +32,7 @@ if [ ! -d "out" ] || [ ! -f "out/test/DBConnectionTest.class" ]; then
     javac -cp .:"$JAR_FILE" \
         src/dao/*.java \
         src/model/*.java \
+        src/exception/*.java \
         src/test/*.java \
         -d out
     cp db.properties out/

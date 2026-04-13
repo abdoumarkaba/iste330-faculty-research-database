@@ -32,6 +32,7 @@ javac -cp .:"$JAR_FILE" \
     src/Main.java \
     src/dao/*.java \
     src/model/*.java \
+    src/exception/*.java \
     src/gui/*.java \
     src/test/*.java \
     -d out

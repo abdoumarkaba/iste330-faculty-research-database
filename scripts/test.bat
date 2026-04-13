@@ -33,6 +33,7 @@ if not exist "out\test\DBConnectionTest.class" (
     javac -cp .;"%JAR_FILE%" ^
         src\dao\*.java ^
         src\model\*.java ^
+        src\exception\*.java ^
         src\test\*.java ^
         -d out
     copy db.properties out\ >nul
