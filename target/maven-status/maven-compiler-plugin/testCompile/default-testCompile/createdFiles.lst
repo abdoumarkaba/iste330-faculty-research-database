@@ -1,0 +1,6 @@
+test/StudentDAOTest.class
+test/FacultyDAOTest.class
+test/SecurityTest.class
+test/ConnectionPoolTest.class
+test/PublicUserDAOTest.class
+test/DBConnectionTest.class
