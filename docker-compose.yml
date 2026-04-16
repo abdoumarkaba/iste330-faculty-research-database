@@ -1,15 +1,25 @@
 # Faculty Research Database - Docker Compose
 # Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
 # Usage: docker compose up -d
+# 
+# Environment Variables Required:
+#   DB_PASSWORD - MySQL root password (must match DB_PASSWORD in .env file)
+#   DB_NAME - Database name (default: faculty_research_db)
+#
+# Create a .env file in the project root with these variables:
+#   DB_PASSWORD=your_secure_password_here
+#   DB_NAME=faculty_research_db
 
 services:
   db:
     image: mysql:8.0
     container_name: faculty-research-db
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: student
-      MYSQL_DATABASE: faculty_research_db
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-student}
+      MYSQL_DATABASE: ${DB_NAME:-faculty_research_db}
     ports:
       - "3307:3306"
     volumes:
@@ -20,6 +30,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    # Security: Limit container resources and prevent privilege escalation
+    security_opt:
+      - no-new-privileges:true
+    # Use read-only root filesystem where possible
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/mysqld
 
 volumes:
   mysql_data:

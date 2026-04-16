@@ -7,14 +7,7 @@ setlocal enabledelayedexpansion
 
 set SCRIPT_DIR=%~dp0
 set PROJECT_DIR=%SCRIPT_DIR%..
-set JAR_FILE=%PROJECT_DIR%\mysql-connector-java-8.0.21.jar
-
-REM Check if MySQL connector exists
-if not exist "%JAR_FILE%" (
-    echo Error: MySQL connector JAR not found at %JAR_FILE%
-    echo Download from: https://dev.mysql.com/downloads/connector/j/
-    exit /b 1
-)
+set LIB_CP=%PROJECT_DIR%\*
 
 cd /d "%PROJECT_DIR%"
 
@@ -27,19 +20,24 @@ if errorlevel 1 (
     timeout /t 10 /nobreak >nul
 )
 
+REM Clean old build
+if exist out rmdir /s /q out
+mkdir out
+
 REM Compile
 echo Compiling...
-javac -cp .;"%JAR_FILE%" ^
-    src\Main.java ^
-    src\dao\*.java ^
-    src\model\*.java ^
-    src\exception\*.java ^
-    src\gui\*.java ^
-    src\test\*.java ^
-    -d out
+javac -cp ".;%LIB_CP%" -sourcepath src\main\java -d out src\main\java\Main.java
 
-REM Copy db.properties
+if errorlevel 1 (
+    echo Compile failed.
+    pause
+    exit /b 1
+)
+
+REM Copy config
 copy db.properties out\ >nul
 
 echo Running application...
-java -cp out;"%JAR_FILE%" Main
+java -cp "out;%LIB_CP%" Main
+
+pause

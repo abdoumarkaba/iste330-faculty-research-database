@@ -1,0 +1,16 @@
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/gui/FacultyPanel.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/util/PasswordUtil.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/util/SimpleLogger.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/dao/DBConnection.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/util/ValidationUtil.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/dao/StudentDAO.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/model/PublicUser.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/dao/FacultyDAO.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/Main.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/dao/PublicUserDAO.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/exception/DatabaseException.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/gui/LoginFrame.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/model/Student.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/model/Faculty.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/gui/StudentPanel.java
+/home/abdoufoundit/Documents/iste330/priority330/grp/faculty-research-db/src/main/java/gui/PublicPanel.java

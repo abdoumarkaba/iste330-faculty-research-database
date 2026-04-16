@@ -1,0 +1,11 @@
+[2026-04-14 00:36:52] [INFO] [main] Starting connection pool tests
+[2026-04-16 17:27:24] [INFO] [main] Starting connection pool tests
+[2026-04-16 17:42:14] [INFO] [main] Starting connection pool tests
+[2026-04-16 17:46:01] [INFO] [main] Starting connection pool tests
+[2026-04-16 17:49:58] [INFO] [main] Starting connection pool tests
+[2026-04-16 17:53:48] [INFO] [main] Starting connection pool tests
+[2026-04-16 17:53:49] [INFO] [main] Info test message
+[2026-04-16 17:53:49] [ERROR] [main] Error test message
+java.lang.RuntimeException: Test exception
+	at test.ConnectionPoolTest.main(ConnectionPoolTest.java:169)
+[2026-04-16 17:53:49] [INFO] [main] Connection pool test completed: 7 passed, 0 failed
