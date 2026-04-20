@@ -1,121 +1,405 @@
 ISTE 330 - Faculty Research Database
 Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
-Date: 2026-04-13
-=====================================
+Date: April 2026
 
-QUICK START (Docker - Recommended)
-=====================================
-No MySQL installation required.
+============================================================
+PURPOSE OF THIS FILE
+============================================================
 
-Prerequisites: Docker + Java JDK 8+
+This file explains exactly how to run and test our Faculty Research Database project.
 
-1. Start the database:
-      docker compose up -d
+This project is a Java desktop application that uses:
+1. Java
+2. MySQL
+3. Docker Desktop **Link: https://www.docker.com/products/docker-desktop/
+4. External JAR dependencies included in the project root
 
-2. Run the application:
-      Linux/Mac:  ./scripts/run.sh
-      Windows:    scripts\run.bat
+The easiest and intended way to run this project is with Docker Desktop.
+Docker is only used to run the MySQL database.
+The Java application itself runs locally on the user's machine.
 
-3. Run backend tests:
-      Linux/Mac:  ./scripts/test.sh
-      Windows:    scripts\test.bat
+============================================================
+RECOMMENDED METHOD FOR GRADING
+============================================================
 
-Default credentials: host=localhost:3307, user=root, password=student
+Please use the Docker method below.
+It is the method we used to successfully run and test the backend.
 
-=====================================
-MANUAL SETUP (Local MySQL)
-=====================================
+============================================================
+PROJECT OVERVIEW
+============================================================
 
-STEP 1 — Set up the database
-------------------------------
-1. Open MySQL Workbench or a terminal with MySQL access.
-2. Run the schema file:
-      mysql -u root -p < sql/schema.sql
-   Or in Workbench: File > Open SQL Script > select sql/schema.sql > Execute.
-3. This creates the database, all tables, and sample data.
+This project allows three user types to interact with a faculty research database:
 
-STEP 2 — Configure db.properties
------------------------------------
-Edit the file db.properties in the project root:
-      host=localhost
-      user=root
-      password=yourpassword
-Replace values to match your MySQL credentials.
+1. Faculty
+   - Insert, update, and delete abstracts
+   - Search students by interest/keyword
+   - Match students to faculty interests
 
-STEP 3 — Add MySQL Connector/J
---------------------------------
-Download mysql-connector-j-X.X.X.jar from:
-   https://dev.mysql.com/downloads/connector/j/
-Place it anywhere accessible (e.g. the project root).
+2. Student
+   - Search faculty by keyword
+   - Search faculty by abstract content
+   - View all faculty
 
-STEP 4 — Compile
------------------
-From the project root directory, run:
+3. Public
+   - Search both students and faculty by one keyword
 
-   Windows:
-   javac -cp .;mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java src/test/*.java -d out
+The project includes:
+- Database schema and sample data
+- Java backend logic
+- Java GUI
+- Backend tests
+- Security validation and password hashing
+- Connection pool support
 
-   Mac/Linux:
-   javac -cp .:mysql-connector-j.jar src/Main.java src/dao/*.java src/model/*.java src/gui/*.java src/test/*.java -d out
+============================================================
+FILES AND FOLDERS TO KNOW
+============================================================
 
-Also copy db.properties into the out/ folder:
-   cp db.properties out/
+Project root contains the following important files/folders:
 
-STEP 5 — Run
--------------
-   Windows:
-   java -cp out;mysql-connector-j.jar Main
+1. scripts/
+   - run.bat
+   - test.bat
+   These are the Windows scripts used to compile and run the project.
 
-   Mac/Linux:
-   java -cp out:mysql-connector-j.jar Main
+2. sql/
+   - schema.sql
+   Contains the MySQL schema and sample data.
 
-=====================================
-MAIN METHOD LOCATION
-=====================================
-The main method is located in: src/Main.java
-This launches the GUI application.
+3. src/main/java/
+   Contains the application source code:
+   - dao/
+   - gui/
+   - model/
+   - util/
+   - exception/
+   - Main.java
 
-=====================================
-USING THE APPLICATION
-=====================================
+4. src/test/java/test/
+   Contains backend test classes.
 
-LOGIN SCREEN
-- Select your user type: Faculty, Student, or Public.
-- Faculty and Student: enter your numeric ID (sample IDs: faculty 1-3, students 1-3).
-- Public: no ID needed, click Login directly.
+5. db.properties
+   Contains database connection settings used by the Java application.
 
-FACULTY PANEL (faculty IDs 1, 2, or 3)
-- Your keywords are shown on login.
-- Insert Abstract: type text in the text area, choose type (book/speaking), click Insert.
-- Update Abstract: enter the abstract_id to change, type new text, click Update.
-- Delete Abstract: enter the abstract_id to remove, click Delete, confirm prompt.
-- Search Students: type a keyword, click Search Students — matching students appear in the table.
+6. docker-compose.yml
+   Used to start the MySQL database container.
 
-STUDENT PANEL (student IDs 1, 2, or 3)
-- Search Faculty: type a keyword (e.g. "AI", "Security"), click Search Faculty.
-  Results show faculty name, building/office, and email.
-- View All Faculty: click button to list all faculty without filtering.
+7. Root-level JAR files
+   Required dependencies are stored in the project root.
 
-PUBLIC PANEL (no login)
-- Enter 1 keyword (e.g. "HCI"), click Search — shows matching students and faculty.
-- View All Entries: shows every student and faculty member in the database.
+============================================================
+PREREQUISITES
+============================================================
 
-=====================================
-RUNNING TESTS
-=====================================
-To verify the backend is working correctly, run the test classes:
+The following software must be installed before running the project:
 
-   Windows:
-   java -cp out;mysql-connector-j.jar test.DBConnectionTest
-   java -cp out;mysql-connector-j.jar test.FacultyDAOTest
-   java -cp out;mysql-connector-j.jar test.StudentDAOTest
-   java -cp out;mysql-connector-j.jar test.PublicUserDAOTest
+1. Java JDK 8 or higher
+2. Docker Desktop for Windows
+3. Command Prompt or terminal access
 
-   Mac/Linux:
-   java -cp out:mysql-connector-j.jar test.DBConnectionTest
-   java -cp out:mysql-connector-j.jar test.FacultyDAOTest
-   java -cp out:mysql-connector-j.jar test.StudentDAOTest
-   java -cp out:mysql-connector-j.jar test.PublicUserDAOTest
+No separate MySQL installation is required when using Docker.
 
-Each test class will print PASSED/FAILED for each test case.
-All tests should pass if the database is correctly set up.
+============================================================
+STEP 1 - VERIFY REQUIRED FILES EXIST
+============================================================
+
+Before running anything, make sure these files exist in the project root:
+
+- docker-compose.yml
+- db.properties
+- mysql-connector-java-8.0.21.jar
+- HikariCP-5.0.1.jar
+- slf4j-api-2.0.9.jar
+- slf4j-simple-2.0.9.jar
+
+Also confirm these folders exist:
+- scripts
+- sql
+- src
+
+============================================================
+STEP 2 - VERIFY db.properties CONTENT
+============================================================
+
+Open db.properties and make sure it contains the following:
+
+host=localhost:3307
+user=root
+password=student
+
+These settings are for the Docker MySQL database used by this project.
+
+============================================================
+STEP 3 - START DOCKER DESKTOP
+============================================================
+
+1. Open Docker Desktop
+2. Wait until Docker Desktop says the engine is running
+3. Do not continue until Docker is fully started
+
+============================================================
+STEP 4 - OPEN COMMAND PROMPT IN THE PROJECT ROOT
+============================================================
+
+Open Command Prompt in the main project folder.
+
+The project root is the folder containing:
+- docker-compose.yml
+- scripts
+- sql
+- src
+
+Example of the correct location:
+C:\Users\YourName\Desktop\iste330-faculty-research-database-main
+
+============================================================
+STEP 5 - START THE DATABASE
+============================================================
+
+In Command Prompt, run:
+
+docker compose up -d
+
+What this does:
+- Starts a MySQL Docker container
+- Makes the database available on localhost port 3307
+- Uses the project configuration for credentials and startup
+
+Expected result:
+- Docker reports that the container is running
+
+============================================================
+STEP 6 - RUN THE APPLICATION
+============================================================
+
+In Command Prompt, from the project root, run:
+
+scripts\run.bat
+
+What this script does:
+1. Verifies required dependencies
+2. Verifies the Docker database is running
+3. Compiles the Java source code
+4. Copies db.properties into the build output
+5. Launches the Java GUI application
+
+Expected result:
+- The application compiles
+- A GUI window opens
+
+============================================================
+STEP 7 - HOW TO USE THE APPLICATION
+============================================================
+
+When the GUI opens, you will see:
+- User Type dropdown
+- ID input
+- Password input
+- Login button
+- Set Password button
+
+------------------------------------------------------------
+FACULTY LOGIN
+------------------------------------------------------------
+
+Use Faculty as the user type.
+
+Sample Faculty IDs:
+- 1
+- 2
+- 3
+
+If no password has been set yet:
+1. Select Faculty
+2. Enter a valid faculty ID
+3. Click Set Password
+4. Follow the password setup process
+5. Then log in with the new password
+
+Faculty functionality includes:
+- Insert abstract
+- Update abstract
+- Delete abstract
+- Search students by keyword
+- Match students based on research interests
+
+------------------------------------------------------------
+STUDENT LOGIN
+------------------------------------------------------------
+
+Use Student as the user type.
+
+Sample Student IDs:
+- 1
+- 2
+- 3
+
+If no password has been set yet:
+1. Select Student
+2. Enter a valid student ID
+3. Click Set Password
+4. Follow the password setup process
+5. Then log in with the new password
+
+Student functionality includes:
+- Search faculty by keyword
+- Search faculty by abstract text
+- View all faculty
+
+------------------------------------------------------------
+PUBLIC ACCESS
+------------------------------------------------------------
+
+Use Public as the user type.
+
+Public does not require a password.
+
+Public functionality includes:
+- Search faculty and students using one keyword
+- View all entries
+
+============================================================
+STEP 8 - RUN THE BACKEND TESTS
+============================================================
+
+To run all backend tests, use:
+
+scripts\test.bat
+
+What this script does:
+1. Confirms Docker is running
+2. Compiles source code and test code
+3. Copies db.properties into the output directory
+4. Runs the following tests:
+
+- DBConnectionTest
+- FacultyDAOTest
+- StudentDAOTest
+- PublicUserDAOTest
+- SecurityTest
+- ConnectionPoolTest
+
+Expected result:
+- All tests pass
+- Output shows summaries for each test group
+- At the end, all test suites should report passed results
+
+============================================================
+WHAT THE TESTS VERIFY
+============================================================
+
+1. DBConnectionTest
+   - Database connection works
+   - Correct database is selected
+   - Connection validity is confirmed
+
+2. FacultyDAOTest
+   - Faculty retrieval
+   - Faculty keywords retrieval
+   - Faculty abstracts retrieval
+   - Insert abstract
+   - Update abstract
+   - Delete abstract
+   - Student matching/search functions
+
+3. StudentDAOTest
+   - Student validation
+   - Student retrieval
+   - Student keyword retrieval
+   - Search faculty by keyword
+   - Search faculty by abstract
+   - View all faculty
+
+4. PublicUserDAOTest
+   - Search both faculty and students by keyword
+   - View all entries
+
+5. SecurityTest
+   - Password hashing
+   - Password verification
+   - Password strength checks
+   - Input validation
+   - SQL injection prevention
+   - Configuration loading
+
+6. ConnectionPoolTest
+   - HikariCP configuration
+   - Pool statistics
+   - Pool health
+   - Connection reuse
+   - Logging
+
+============================================================
+DATABASE SAMPLE DATA
+============================================================
+
+The schema includes sample data for:
+- Faculty
+- Students
+- Faculty keywords
+- Student keywords
+- Faculty abstracts
+- Public keywords
+
+This means the application and tests should work immediately after Docker and the scripts are run.
+
+No manual database inserts are required for normal grading/testing.
+
+============================================================
+IF THE APPLICATION DOES NOT RUN
+============================================================
+
+Please check the following:
+
+1. Docker Desktop is open and running
+2. docker compose up -d was executed successfully
+3. db.properties exists in the project root
+4. The required JAR files exist in the project root
+5. Java JDK is installed and available in Command Prompt
+
+============================================================
+IF THE DATABASE DOES NOT CONNECT
+============================================================
+
+Check:
+- Docker container is running
+- db.properties contains:
+  host=localhost:3307
+  user=root
+  password=student
+
+============================================================
+IF COMPILATION FAILS
+============================================================
+
+Make sure:
+- You are running the command from the project root
+- The scripts folder exists
+- All required JAR files are in the root directory
+
+============================================================
+STOPPING THE DATABASE
+============================================================
+
+When finished, you may stop the Docker database by running:
+
+docker compose down
+
+============================================================
+FINAL NOTES
+============================================================
+
+Important clarification:
+- Docker is used only for the MySQL database
+- The Java application itself runs locally on the machine
+- The provided scripts were updated and tested on Windows
+- The backend tests pass successfully when run with the required setup above
+
+The intended grading path is:
+
+1. Start Docker Desktop
+2. Run docker compose up -d
+3. Run scripts\run.bat to launch the application
+4. Run scripts\test.bat to verify backend functionality
+5. Optionally run docker compose down when finished
