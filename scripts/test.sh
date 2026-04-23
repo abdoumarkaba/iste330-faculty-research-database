@@ -1,7 +1,7 @@
 #!/bin/bash
 # Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
 # Date: 2026-04-13 | ISTE 330
-# Run all backend tests for the Faculty Research Database application
+# Run all backend tests for the Faculty Research Database application (Local MySQL)
 
 set -e
 
@@ -18,24 +18,11 @@ fi
 
 cd "$PROJECT_DIR"
 
-# Ensure database is running
-if ! docker compose ps db --status "running" 2>/dev/null | grep -q "running"; then
-    echo "Starting database..."
-    docker compose up -d
-    echo "Waiting for database to be ready..."
-    sleep 10
-fi
-
 # Compile if needed
-if [ ! -d "out" ] || [ ! -f "out/test/DBConnectionTest.class" ]; then
+if [ ! -d "out" ] || [ ! -f "out/DBConnectionTest.class" ]; then
     echo "Compiling..."
-    javac -cp .:"$JAR_FILE" \
-        src/dao/*.java \
-        src/model/*.java \
-        src/exception/*.java \
-        src/test/*.java \
-        -d out
-    cp db.properties out/
+    javac -cp .:"$JAR_FILE" src/*.java -d out
+    cp src/main/resources/db.properties out/
 fi
 
 echo "============================================"
@@ -48,7 +35,7 @@ TOTAL_FAILED=0
 for test_class in DBConnectionTest FacultyDAOTest StudentDAOTest PublicUserDAOTest; do
     echo ""
     echo "--- Running $test_class ---"
-    java -cp out:"$JAR_FILE" "test.$test_class" 2>&1 | tee /tmp/test_output.txt
+    java -cp out:"$JAR_FILE" "$test_class" 2>&1 | tee /tmp/test_output.txt
     
     # Count results
     passed=$(grep -c "PASSED" /tmp/test_output.txt 2>/dev/null || echo 0)
