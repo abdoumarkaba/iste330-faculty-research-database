@@ -32,7 +32,7 @@ echo ============================================
 set TOTAL_PASSED=0
 set TOTAL_FAILED=0
 
-for %%t in (DBConnectionTest FacultyDAOTest StudentDAOTest PublicUserDAOTest) do (
+for %%t in (DBConnectionTest FacultyDAOTest StudentDAOTest PublicUserDAOTest SecurityTest) do (
     echo.
     echo --- Running %%t ---
     java -cp out;"%MYSQL_JAR%" %%t

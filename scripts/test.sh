@@ -32,7 +32,7 @@ echo "============================================"
 TOTAL_PASSED=0
 TOTAL_FAILED=0
 
-for test_class in DBConnectionTest FacultyDAOTest StudentDAOTest PublicUserDAOTest; do
+for test_class in DBConnectionTest FacultyDAOTest StudentDAOTest PublicUserDAOTest SecurityTest; do
     echo ""
     echo "--- Running $test_class ---"
     java -cp out:"$JAR_FILE" "$test_class" 2>&1 | tee /tmp/test_output.txt
