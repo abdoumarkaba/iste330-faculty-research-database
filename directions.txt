@@ -29,8 +29,8 @@ The database configuration is already set in src/main/resources/db.properties:
 
 No changes needed unless your MySQL setup uses different credentials.
 
-STEP 3 — Compile the application (Backend Assessment)
-------------------------------------------------------
+STEP 3 — Compile the application
+---------------------------------
 From the project root directory, run:
 
    Windows:
@@ -38,11 +38,6 @@ From the project root directory, run:
 
    Mac/Linux:
    javac -cp .:mysql-connector-java-8.0.21.jar src/*.java -d out
-
-Successful compilation with no errors indicates:
-- All Java source files are syntactically correct
-- All imports and dependencies are properly resolved
-- The code structure is valid for offline execution
 
 STEP 4 — Copy configuration to output directory
 ----------------------------------------------
@@ -53,6 +48,57 @@ Copy the database properties file to the output directory:
 
    Mac/Linux:
    cp src/main/resources/db.properties out/
+
+STEP 5 — Run backend tests (Functionality Assessment)
+------------------------------------------------------
+To verify backend functionality without the GUI, run the test classes:
+
+   Windows:
+   java -cp out;mysql-connector-java-8.0.21.jar DBConnectionTest
+   java -cp out;mysql-connector-java-8.0.21.jar FacultyDAOTest
+   java -cp out;mysql-connector-java-8.0.21.jar StudentDAOTest
+   java -cp out;mysql-connector-java-8.0.21.jar PublicUserDAOTest
+   java -cp out;mysql-connector-java-8.0.21.jar SecurityTest
+
+   Mac/Linux:
+   java -cp out:mysql-connector-java-8.0.21.jar DBConnectionTest
+   java -cp out:mysql-connector-java-8.0.21.jar FacultyDAOTest
+   java -cp out:mysql-connector-java-8.0.21.jar StudentDAOTest
+   java -cp out:mysql-connector-java-8.0.21.jar PublicUserDAOTest
+   java -cp out:mysql-connector-java-8.0.21.jar SecurityTest
+
+Each test verifies specific backend functionality:
+
+DBConnectionTest:
+- Verifies database connection can be established
+- Tests connection validity and proper catalog selection
+- Confirms DriverManager is correctly configured
+
+FacultyDAOTest:
+- Tests faculty retrieval by ID (valid and invalid IDs)
+- Verifies keyword search functionality
+- Tests abstract CRUD operations (insert, update, delete)
+- Confirms student search by keyword and faculty matching
+
+StudentDAOTest:
+- Tests student ID validation
+- Verifies student authentication with password verification
+- Tests faculty search by keyword (matches keywords and abstracts)
+- Confirms retrieval of all faculty listings
+
+PublicUserDAOTest:
+- Tests public keyword search across faculty and students
+- Verifies search with no results handling
+- Confirms retrieval of all database entries
+
+SecurityTest:
+- Tests PBKDF2 password hashing and verification
+- Verifies password strength validation
+- Tests SQL injection prevention in keyword and abstract validation
+- Confirms ID validation and range checking
+- Tests environment variable configuration support
+
+Each test prints PASSED/FAILED for each test case.
 
 =====================================
 OPTIONAL: RUN THE APPLICATION
