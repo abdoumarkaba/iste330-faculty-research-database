@@ -3,7 +3,7 @@ Authors: Haris Jukovic, Gustavo Mejia, Joann Mathews, Abderrahmane Nait Brahim
 Date: 2026-04-13
 =====================================
 
-SETUP INSTRUCTIONS (Local MySQL)
+HOW TO COMPILE AND ASSESS BACKEND FUNCTIONALITY
 =====================================
 
 Prerequisites:
@@ -29,8 +29,8 @@ The database configuration is already set in src/main/resources/db.properties:
 
 No changes needed unless your MySQL setup uses different credentials.
 
-STEP 3 — Compile the application
----------------------------------
+STEP 3 — Compile the application (Backend Assessment)
+------------------------------------------------------
 From the project root directory, run:
 
    Windows:
@@ -38,6 +38,11 @@ From the project root directory, run:
 
    Mac/Linux:
    javac -cp .:mysql-connector-java-8.0.21.jar src/*.java -d out
+
+Successful compilation with no errors indicates:
+- All Java source files are syntactically correct
+- All imports and dependencies are properly resolved
+- The code structure is valid for offline execution
 
 STEP 4 — Copy configuration to output directory
 ----------------------------------------------
@@ -49,81 +54,38 @@ Copy the database properties file to the output directory:
    Mac/Linux:
    cp src/main/resources/db.properties out/
 
-STEP 5 — Run the application
------------------------------
+=====================================
+OPTIONAL: RUN THE APPLICATION
+=====================================
+To launch the GUI application:
+
    Windows:
    java -cp out;mysql-connector-java-8.0.21.jar Main
 
    Mac/Linux:
    java -cp out:mysql-connector-java-8.0.21.jar Main
 
-=====================================
-MAIN METHOD LOCATION
-=====================================
 The main method is located in: src/Main.java
-This launches the GUI application.
 
 =====================================
-RUNNING TESTS
+PROJECT STRUCTURE
 =====================================
-To verify the backend is working correctly, run the test classes:
-
-   Windows:
-   java -cp out;mysql-connector-java-8.0.21.jar DBConnectionTest
-   java -cp out;mysql-connector-java-8.0.21.jar FacultyDAOTest
-   java -cp out;mysql-connector-java-8.0.21.jar StudentDAOTest
-   java -cp out;mysql-connector-java-8.0.21.jar PublicUserDAOTest
-
-   Mac/Linux:
-   java -cp out:mysql-connector-java-8.0.21.jar DBConnectionTest
-   java -cp out:mysql-connector-java-8.0.21.jar FacultyDAOTest
-   java -cp out:mysql-connector-java-8.0.21.jar StudentDAOTest
-   java -cp out:mysql-connector-java-8.0.21.jar PublicUserDAOTest
-
-Each test class will print PASSED/FAILED for each test case.
-All tests should pass if the database is correctly set up.
+- src/                    - All Java source files (flattened, no packages)
+- sql/schema.sql          - Database schema and sample data
+- src/main/resources/db.properties - Database configuration
+- mysql-connector-java-8.0.21.jar - MySQL JDBC driver
+- scripts/                - Helper scripts for compilation and execution
 
 =====================================
-USING THE APPLICATION
+KEY BACKEND FEATURES
 =====================================
+- DBConnection: DriverManager-based database connections
+- FacultyDAO: Faculty CRUD operations and student search
+- StudentDAO: Student authentication and faculty search
+- PublicUserDAO: Public keyword search functionality
+- PasswordUtil: PBKDF2 password hashing
+- ValidationUtil: Input validation and SQL injection prevention
+- SimpleLogger: Thread-safe logging utility
 
-LOGIN SCREEN
-- Select your user type: Faculty, Student, or Public.
-- Faculty and Student: enter your numeric ID (sample IDs: faculty 1-3, students 1-3).
-- Public: no ID needed, click Login directly.
-
-FACULTY PANEL (faculty IDs 1, 2, or 3)
-- Your keywords are shown on login.
-- Insert Abstract: type text in the text area, choose type (book/speaking), click Insert.
-- Update Abstract: enter the abstract_id to change, type new text, click Update.
-- Delete Abstract: enter the abstract_id to remove, click Delete, confirm prompt.
-- Search Students: type a keyword, click Search Students — matching students appear in the table.
-
-STUDENT PANEL (student IDs 1, 2, or 3)
-- Search Faculty: type a keyword (e.g. "AI", "Security"), click Search Faculty.
-  Results show faculty name, building/office, and email.
-- View All Faculty: click button to list all faculty without filtering.
-
-PUBLIC PANEL (no login)
-- Enter 1 keyword (e.g. "HCI"), click Search — shows matching students and faculty.
-- View All Entries: shows every student and faculty member in the database.
-
-=====================================
-RUNNING TESTS
-=====================================
-To verify the backend is working correctly, run the test classes:
-
-   Windows:
-   java -cp out;mysql-connector-j.jar test.DBConnectionTest
-   java -cp out;mysql-connector-j.jar test.FacultyDAOTest
-   java -cp out;mysql-connector-j.jar test.StudentDAOTest
-   java -cp out;mysql-connector-j.jar test.PublicUserDAOTest
-
-   Mac/Linux:
-   java -cp out:mysql-connector-j.jar test.DBConnectionTest
-   java -cp out:mysql-connector-j.jar test.FacultyDAOTest
-   java -cp out:mysql-connector-j.jar test.StudentDAOTest
-   java -cp out:mysql-connector-j.jar test.PublicUserDAOTest
-
-Each test class will print PASSED/FAILED for each test case.
-All tests should pass if the database is correctly set up.
+All backend features are implemented without external dependencies
+(other than MySQL Connector JAR) and can be compiled offline.
