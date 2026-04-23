@@ -98,6 +98,68 @@ public class FacultyDAO {
     }
 
     /**
+     * Inserts a new keyword for a faculty member.
+     * Validates all inputs to prevent SQL injection and ensure data integrity.
+     */
+    public boolean insertKeyword(int facultyId, String keyword) {
+        // Security: Validate all inputs
+        ValidationUtil.validateFacultyId(facultyId);
+        ValidationUtil.validateKeyword(keyword);
+        
+        String sql = "INSERT INTO faculty_keywords (faculty_id, keyword) VALUES (?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, facultyId);
+            pstmt.setString(2, keyword);
+            pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            throw new DatabaseException("insertKeyword", 
+                "Failed to insert keyword for faculty ID " + facultyId, e);
+        }
+    }
+
+    /**
+     * Updates an existing keyword for a faculty member.
+     * Validates inputs to prevent SQL injection.
+     */
+    public boolean updateKeyword(int keywordId, String newKeyword) {
+        // Security: Validate inputs
+        ValidationUtil.validateKeywordId(keywordId);
+        ValidationUtil.validateKeyword(newKeyword);
+        
+        String sql = "UPDATE faculty_keywords SET keyword = ? WHERE keyword_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, newKeyword);
+            pstmt.setInt(2, keywordId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DatabaseException("updateKeyword",
+                "Failed to update keyword ID " + keywordId, e);
+        }
+    }
+
+    /**
+     * Deletes a keyword by ID.
+     * Validates the keyword ID to prevent invalid operations.
+     */
+    public boolean deleteKeyword(int keywordId) {
+        // Security: Validate input
+        ValidationUtil.validateKeywordId(keywordId);
+        
+        String sql = "DELETE FROM faculty_keywords WHERE keyword_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, keywordId);
+            return pstmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new DatabaseException("deleteKeyword",
+                "Failed to delete keyword ID " + keywordId, e);
+        }
+    }
+
+    /**
      * Searches students by keyword, returning Student model objects.
      * Validates the search keyword to prevent SQL injection.
      */

@@ -38,8 +38,10 @@ for test_class in DBConnectionTest FacultyDAOTest StudentDAOTest PublicUserDAOTe
     java -cp out:"$JAR_FILE" "$test_class" 2>&1 | tee /tmp/test_output.txt
     
     # Count results
-    passed=$(grep -c "PASSED" /tmp/test_output.txt 2>/dev/null || echo 0)
-    failed=$(grep -c "FAILED" /tmp/test_output.txt 2>/dev/null || echo 0)
+    passed=$(grep -c "PASSED" /tmp/test_output.txt 2>/dev/null || true)
+    failed=$(grep -c "FAILED" /tmp/test_output.txt 2>/dev/null || true)
+    passed=${passed:-0}
+    failed=${failed:-0}
     TOTAL_PASSED=$((TOTAL_PASSED + passed))
     TOTAL_FAILED=$((TOTAL_FAILED + failed))
 done

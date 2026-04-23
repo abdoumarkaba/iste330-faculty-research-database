@@ -228,6 +228,24 @@ public class ValidationUtil {
     }
     
     /**
+     * Validates a keyword ID is a positive integer.
+     * Security: Ensures only valid keyword IDs are processed.
+     * 
+     * @param keywordId the keyword ID to validate
+     * @return true if valid
+     * @throws IllegalArgumentException if invalid
+     */
+    public static boolean validateKeywordId(int keywordId) {
+        if (keywordId < MIN_ID_VALUE) {
+            throw new IllegalArgumentException("Keyword ID must be positive, got: " + keywordId);
+        }
+        if (keywordId > MAX_ID_VALUE) {
+            throw new IllegalArgumentException("Keyword ID exceeds maximum allowed value: " + MAX_ID_VALUE);
+        }
+        return true;
+    }
+    
+    /**
      * Validates abstract text is safe for database storage.
      * Security: Prevents SQL injection and limits length to prevent buffer issues.
      * 
