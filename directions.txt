@@ -20,14 +20,19 @@ STEP 1 — Set up the database
    Or in Workbench: File > Open SQL Script > select sql/schema.sql > Execute.
 4. This creates the database "faculty_research_db", all tables, and sample data.
 
+IMPORTANT: The backend tests require the sample data from the schema to function correctly.
+Tests verify functionality using the sample faculty (IDs 1-3) and student (IDs 1-3) data.
+
 STEP 2 — Verify database configuration
 ---------------------------------------
-The database configuration is already set in src/main/resources/db.properties:
+The database configuration is set in src/main/resources/db.properties:
       host=localhost:3306
+      database=faculty_research_db
       user=root
       password=student
 
-No changes needed unless your MySQL setup uses different credentials.
+NOTE: If your MySQL uses different credentials, update src/main/resources/db.properties
+with your host, database, user, and password values.
 
 STEP 3 — Compile the application
 ---------------------------------

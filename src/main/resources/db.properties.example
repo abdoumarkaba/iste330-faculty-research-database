@@ -1,0 +1,7 @@
+# Database configuration template
+# Copy this file to db.properties and update with your MySQL credentials
+
+host=localhost:3306
+database=faculty_research_db
+user=YOUR_MYSQL_USER
+password=YOUR_MYSQL_PASSWORD
